@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 
 namespace ProductManager
 {
@@ -19,7 +18,9 @@ namespace ProductManager
                 Console.WriteLine("(1) Ny produkt");
                 Console.WriteLine("(2) Sök produkt");
                 Console.WriteLine("(3) Ny kategori");
-                Console.WriteLine("(4) Avsluta");
+                Console.WriteLine("(4) Lägg till produkt till kategori");
+                Console.WriteLine("(5) Lista kategorier");
+                Console.WriteLine("(6) Avsluta");
 
                 ConsoleKeyInfo userInput;
 
@@ -37,7 +38,11 @@ namespace ProductManager
                         userInput.Key == ConsoleKey.D3 ||
                         userInput.Key == ConsoleKey.NumPad3 ||
                         userInput.Key == ConsoleKey.D4 ||
-                        userInput.Key == ConsoleKey.NumPad4
+                        userInput.Key == ConsoleKey.NumPad4 ||
+                        userInput.Key == ConsoleKey.D5 ||
+                        userInput.Key == ConsoleKey.NumPad5 ||
+                        userInput.Key == ConsoleKey.D6 ||
+                        userInput.Key == ConsoleKey.NumPad6
                         );
 
                 } while (invalidSelection);
@@ -57,68 +62,59 @@ namespace ProductManager
 
                     case ConsoleKey.D2:
                     case ConsoleKey.NumPad2:
-
-                        Console.Write("Sök efter artikelnummer på produkten: ");
-
-                        string searchProduct = Console.ReadLine();
-
-                        // tenerary operator
-
-                        //var exist = productDictionary.ContainsKey(searchProduct);
-                        Product searchResult = productDictionary.ContainsKey(searchProduct)
-                                ? productDictionary[searchProduct]
-                                : null;
-
-                        if (searchResult != null)
                         {
-                            //Product findProduct = productDictionary.FirstOrDefault(searchProduct);
 
-                            
+                            Console.Write("Sök efter artikelnummer på produkten: ");
 
-                            Console.Clear();
-                            Console.WriteLine($"Artikelnummer: {searchResult.articleNumber}");
-                            Console.WriteLine($"Namn: {searchResult.nameOfProduct}");
-                            Console.WriteLine($"Beskrivning: {searchResult.descriptionOfProduct}");
-                            Console.WriteLine($"Pris: {searchResult.productPrice}");
+                            string searchProduct = Console.ReadLine();
 
+                            // tenerary operator
 
-                            Console.WriteLine("Tryck Escape för att återgå till menyn");
-                            Console.ReadKey();
+                            //var exist = productDictionary.ContainsKey(searchProduct);
+                            Product searchResult = productDictionary.ContainsKey(searchProduct)
+                                    ? productDictionary[searchProduct]
+                                    : null;
 
-                            do
+                            if (searchResult != null)
                             {
-                                userInput = Console.ReadKey(true);
+                                //Product findProduct = productDictionary.FirstOrDefault(searchProduct);
 
-                                invalidSelection = !(
-                                    userInput.Key == ConsoleKey.Escape
-                                    );
 
-                            } while (invalidSelection);
+
+                                Console.Clear();
+                                Console.WriteLine($"Artikelnummer: {searchResult.articleNumber}");
+                                Console.WriteLine($"Namn: {searchResult.nameOfProduct}");
+                                Console.WriteLine($"Beskrivning: {searchResult.descriptionOfProduct}");
+                                Console.WriteLine($"Pris: {searchResult.productPrice}");
+
+
+                                Console.WriteLine("Tryck Escape för att återgå till menyn");
+                                Console.ReadKey();
+
+                                do
+                                {
+                                    userInput = Console.ReadKey(true);
+
+                                    invalidSelection = !(
+                                        userInput.Key == ConsoleKey.Escape
+                                        );
+
+                                } while (invalidSelection);
+                            }
+                            else
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Finns ingen registrerad produkt med det Namnet!");
+                                Thread.Sleep(2000);
+                            }
                         }
-                        else
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Finns ingen registrerad produkt med det Namnet!");
-                            Thread.Sleep(2000);
-                        }
-
                         break;
 
 
                     case ConsoleKey.D3:
                     case ConsoleKey.NumPad3:
 
-
-
-                        Console.WriteLine("Ny katergori ");
-
-
-                        Console.Write("Namn: ");
-
-                        string newCategory = Console.ReadLine();
-
-                        Console.Write("Korrekta uppgifter tryck (J)a, om inte, tryck (N)ej.");
-
+                        AddCategory();
 
 
                         break;
@@ -126,6 +122,89 @@ namespace ProductManager
 
                     case ConsoleKey.D4:
                     case ConsoleKey.NumPad4:
+
+                        {
+
+
+                            Console.Write("Artikelnummer: ");
+
+                            var searchProduct = Console.ReadLine();
+
+
+                            var product = productDictionary.ContainsKey(searchProduct)
+                                ? productDictionary[searchProduct]
+                                : null;
+
+                            bool productFound = product != null;
+
+                            if (productFound)
+                            {
+
+                                Console.WriteLine("Sök kategori:");
+
+                                var searchCategory = Console.ReadLine();
+
+                                Console.Clear();
+
+
+                                var category = categoryDictionary.ContainsKey(searchCategory)
+                                    ? categoryDictionary[searchCategory]
+                                    : null;
+
+
+                                if (category != null)
+                                {
+                                    if (category.listOfProducts.Contains(product) == false)
+                                    {
+                                        category.AddProduct(product);
+                                        Console.WriteLine("Produkt tillagd i kategori");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Produkt finns redan i kategori");
+                                    }
+
+
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Kategori finns inte");
+                                }
+
+
+                            }
+                            else
+                            {
+                                Console.WriteLine("Produkt finns ej");
+                            }
+
+
+                            Thread.Sleep(2000);
+
+                            break;
+                        }
+
+
+                    case ConsoleKey.D5:
+                    case ConsoleKey.NumPad5:
+
+                        // iterera över kataloger, foreach() - tänk på att en Dictionary består av KeyValue - där value är din kategori
+                        // sök online efter iteration med Dicationary, 
+
+
+                        // lista kategorier
+                        // var category = categoryDictionary.ContainsKey(searchCategory)
+                        //        ? categoryDictionary[searchCategory]
+                        //        : null;
+
+                        // (category.listOfProducts.Contains(product) == false)
+
+                       // list.Count(); ?
+
+                        break;
+
+                    case ConsoleKey.D6:
+                    case ConsoleKey.NumPad6:
 
                         applicationRunning = false;
 
@@ -137,7 +216,73 @@ namespace ProductManager
             } while (applicationRunning);
         }
 
-        private static void AddProduct()
+        private static void AddCategory()
+        {
+            {
+                ConsoleKeyInfo userInput;
+                string nameOfCategory;
+                do
+                {
+
+                    Console.Write("Namn: ");
+
+                    nameOfCategory = Console.ReadLine();
+
+                    Console.WriteLine("Korrekta uppgifter tryck (J)a, om inte, tryck (N)ej.");
+
+
+                    bool invalidSelection = false;
+
+                    do
+                    {
+                        userInput = Console.ReadKey(true);
+
+                        invalidSelection = !(
+                            userInput.Key == ConsoleKey.J ||
+                            userInput.Key == ConsoleKey.N
+                            );
+
+                    } while (invalidSelection);
+
+                } while (userInput.Key == ConsoleKey.N);
+
+                Console.Clear();
+
+                switch (userInput.Key)
+                {
+                    case ConsoleKey.J:
+
+
+
+                        try
+                        {
+                            categoryDictionary.Add(nameOfCategory, new Category(nameOfCategory));
+                            Console.WriteLine("Kategori tillagd");
+
+                        }
+                        catch (ArgumentException) when (categoryDictionary.ContainsKey(nameOfCategory))
+                        {
+                            Console.WriteLine("Kategori är redan tillagd");
+                        }
+                        catch (ArgumentNullException)
+                        {
+                            Console.WriteLine("Ogiltigt namn");
+                        }
+                        Thread.Sleep(2000);
+                        Console.Clear();
+
+                        break;
+
+                    case ConsoleKey.N:
+                        Console.WriteLine("Åter till menyn");
+                        Thread.Sleep(2000);
+                        Console.Clear();
+                        break;
+
+                }
+            }
+        }
+        static void AddProduct()
         {
             ConsoleKeyInfo userInput;
             string articleNumber;
@@ -195,7 +340,7 @@ namespace ProductManager
                     {
                         productDictionary.Add(articleNumber, new Product(articleNumber, nameOfProduct, descriptionOfProduct, productPrice));
                         Console.WriteLine("Produkt tillagd");
-                        
+
                     }
                     catch (ArgumentException) when (productDictionary.ContainsKey(articleNumber))
                     {
