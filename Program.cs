@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ProductManager
+﻿namespace ProductManager
 {
     class Products
     {
@@ -68,18 +66,14 @@ namespace ProductManager
 
                             string searchProduct = Console.ReadLine();
 
-                            // tenerary operator
+                            Console.Clear();
 
-                            //var exist = productDictionary.ContainsKey(searchProduct);
                             Product searchResult = productDictionary.ContainsKey(searchProduct)
                                     ? productDictionary[searchProduct]
                                     : null;
 
                             if (searchResult != null)
                             {
-                                //Product findProduct = productDictionary.FirstOrDefault(searchProduct);
-
-
 
                                 Console.Clear();
                                 Console.WriteLine($"Artikelnummer: {searchResult.articleNumber}");
@@ -104,7 +98,7 @@ namespace ProductManager
                             else
                             {
                                 Console.Clear();
-                                Console.WriteLine("Finns ingen registrerad produkt med det Namnet!");
+                                Console.WriteLine("Finns ingen registrerad produkt med det namnet!");
                                 Thread.Sleep(2000);
                             }
                         }
@@ -154,7 +148,7 @@ namespace ProductManager
 
                                 if (category != null)
                                 {
-                                    if (category.listOfProducts.Contains(product) == false)
+                                    if (category.ListOfProducts.Contains(product) == false)
                                     {
                                         category.AddProduct(product);
                                         Console.WriteLine("Produkt tillagd i kategori");
@@ -188,18 +182,27 @@ namespace ProductManager
                     case ConsoleKey.D5:
                     case ConsoleKey.NumPad5:
 
-                        // iterera över kataloger, foreach() - tänk på att en Dictionary består av KeyValue - där value är din kategori
-                        // sök online efter iteration med Dicationary, 
+                       
+                        {
+                            Console.WriteLine("Namn");
+                            Console.WriteLine("--------------------------------");
+                           
+                            
+                            foreach (var category in categoryDictionary)
+                            {
+                                Console.WriteLine($"{category.Value.CategoryName} ({category.Value.ListOfProducts.Count()})");
+                                
+                            }                          
+                            
+                            while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+
+                            Console.WriteLine("Tryck ESC för att lämna sidan");
+
+                            
+                            Console.Clear();
 
 
-                        // lista kategorier
-                        // var category = categoryDictionary.ContainsKey(searchCategory)
-                        //        ? categoryDictionary[searchCategory]
-                        //        : null;
-
-                        // (category.listOfProducts.Contains(product) == false)
-
-                       // list.Count(); ?
+                        }
 
                         break;
 
@@ -215,6 +218,8 @@ namespace ProductManager
 
             } while (applicationRunning);
         }
+
+
 
         private static void AddCategory()
         {

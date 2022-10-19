@@ -4,13 +4,13 @@ namespace ProductManager;
 
 class Category
 {
-    public Category(string name)
+    public Category(string? name)
     {
-        Name = name;
+        CategoryName = name;
 
     }
 
-    public string Name
+    public string CategoryName
     {
         get
         {
@@ -30,14 +30,22 @@ class Category
 
 
 
-    public string name;
+    private string name;
 
-    public List<Product> listOfProducts = new List<Product>();
+    public List<Product> ListOfProducts { get; } = new List<Product>();
+
     public void AddProduct(Product product)
     {
-        // TODO Kolla efter dublett, oom sådan kast aexcpetion, och fånga där AddProduct anropas
 
-        listOfProducts.Add(product);
+        if (ListOfProducts.Contains(product))
+        {
+            throw new ArgumentException("Produkt finns redan i kategorin");
+        }
+        else
+        {
+            ListOfProducts.Add(product);
+        }
+
 
     }
 
