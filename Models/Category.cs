@@ -1,8 +1,6 @@
-﻿
+﻿namespace ProductManager.Models;
 
-namespace ProductManager;
-
-class Category
+public class Category
 {
     public Category(string? name)
     {

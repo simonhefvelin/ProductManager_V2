@@ -1,27 +1,27 @@
 ﻿using System.Xml.Linq;
 
-namespace ProductManager;
+namespace ProductManager.Models;
 
-class Product
+public class Product
 {
     public string articleNumber;
     public string nameOfProduct;
     public string descriptionOfProduct;
-    public string productPrice;
+    public decimal productPrice;
 
     public Product(string articleNumber,
     string nameOfProduct,
     string descriptionOfProduct,
-    string productPrice)
+    decimal productPrice)
     {
         ArticleNumber = articleNumber;
-        this.nameOfProduct = nameOfProduct; 
+        this.nameOfProduct = nameOfProduct;
         this.descriptionOfProduct = descriptionOfProduct;
         this.productPrice = productPrice;
 
 
-    
-    
+
+
     }
 
     public string ArticleNumber
