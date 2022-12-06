@@ -1,45 +1,31 @@
-﻿using System.Xml.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace ProductManager.Models;
 
 public class Product
 {
-    public string articleNumber;
-    public string nameOfProduct;
-    public string descriptionOfProduct;
-    public decimal productPrice;
-
-    public Product(string articleNumber,
-    string nameOfProduct,
-    string descriptionOfProduct,
-    decimal productPrice)
+    public Product(string articleNumber, string name, string description, decimal price)
     {
-        ArticleNumber = articleNumber;
-        this.nameOfProduct = nameOfProduct;
-        this.descriptionOfProduct = descriptionOfProduct;
-        this.productPrice = productPrice;
-
-
-
-
+        ArticleNumber = string.IsNullOrEmpty(articleNumber) ? throw new ArgumentNullException("Ogiltligt artikelnummer") : articleNumber;
+        Name = name;
+        Description = description;
+        Price = price;
     }
 
-    public string ArticleNumber
-    {
-        get
-        {
+    [Key]
+    [MaxLength(6)]
+    public string ArticleNumber { get; set; }   
 
-            return articleNumber;
+    [MaxLength(20)]
+    public string Name { get; set; }
 
-        }
-        set
-        {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException("Ogiltligt artikelnummer");
-            articleNumber = value;
-        }
+    [MaxLength(50)]
+    public string Description { get; set; }
 
-
-    }
+    [MaxLength(18)]
+    [Precision(18,2)]
+    public decimal Price { get; set; }
 }
 

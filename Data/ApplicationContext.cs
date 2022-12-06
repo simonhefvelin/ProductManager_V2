@@ -1,28 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductManager.Models;
-using System;
+
 
 
 namespace ProductManager.Data;
 
-public class ApplicationContext : DbContext 
+class ApplicationContext : DbContext 
 {
-    private string connectionString;
 
-    public ApplicationContext(string connectionString)
-    {
-        this.connectionString = connectionString;
-    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlServer("Server =.; Database = ProductManager; Integrated Security = true; Encrypt = False");
        
     }
 
     public DbSet<Product> Product { get; set; }
 
-    public DbSet<Category> Category { get;set; }
+    public DbSet<Category> Category { get; set; }
 
   
 }

@@ -1,4 +1,5 @@
-﻿using ProductManager.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductManager.Data;
 using ProductManager.Models;
 using static System.Console;
 
@@ -6,13 +7,9 @@ namespace ProductManager;
 
 class Products
 {
-    static Dictionary<string, Category> categoryDictionary = new Dictionary<string, Category>();
 
-    static Dictionary<string, Product> productDictionary = new Dictionary<string, Product>();
-    
-    static string connectionString = "Server=.;Database=ProductManager;Integrated Security=true;Encrypt=False";
 
-    static ApplicationContext context = new ApplicationContext(connectionString);
+    static ApplicationContext context = new ApplicationContext();
     static void Main(string[] args)
     {
 
@@ -83,7 +80,7 @@ class Products
                 case ConsoleKey.NumPad4:
 
 
-                    AddProductToCategory();
+                    //AddProductToCategory();
 
                     break;
 
@@ -91,20 +88,20 @@ class Products
                 case ConsoleKey.NumPad5:
 
 
-                    {
-                        WriteLine("Namn");
-                        WriteLine("--------------------------------");
+                    //{
+                    //    WriteLine("Namn");
+                    //    WriteLine("--------------------------------");
 
 
-                        foreach (var category in categoryDictionary)
-                        {
-                            WriteLine($"{category.Value.CategoryName} ({category.Value.ListOfProducts.Count()})");
-                        }
+                    //    foreach (var category in categoryDictionary)
+                    //    {
+                    //        WriteLine($"{category.Value.CategoryName} ({category.Value.ListOfProducts.Count()})");
+                    //    }
 
-                        ReadKey();
+                    //    ReadKey();
 
-                        Clear();
-                    }
+                    //    Clear();
+                    //}
 
                     break;
 
@@ -120,181 +117,7 @@ class Products
 
         } while (applicationRunning);
     }
-
-    static void SearchProduct()
-    {
-        Write("Sök efter artikelnummer på produkten: ");
-
-        string searchProduct = ReadLine();
-
-        Clear();
-
-        Product searchResult = productDictionary.ContainsKey(searchProduct)
-                ? productDictionary[searchProduct]
-                : null;
-
-        bool invalidSelection = false;
-
-        ConsoleKeyInfo userInput = ReadKey();
-
-        if (searchResult != null)
-        {
-
-            Clear();
-
-            WriteLine($"Artikelnummer: {searchResult.articleNumber}");
-            WriteLine($"Namn: {searchResult.nameOfProduct}");
-            WriteLine($"Beskrivning: {searchResult.descriptionOfProduct}");
-            WriteLine($"Pris: {searchResult.productPrice}");
-
-
-            WriteLine("Tryck valfri tangent för att gå tillbaka");
-            ReadKey();
-
-            do
-            {
-                userInput = ReadKey(true);
-
-            } while (invalidSelection);
-        }
-        else
-        {
-            Clear();
-            WriteLine("Produkt saknas");
-            Thread.Sleep(2000);
-        }
-    }
-
-    static void AddProductToCategory()
-    {
-        Write("Artikelnummer: ");
-
-        var searchProduct = ReadLine();
-
-
-        var product = productDictionary.ContainsKey(searchProduct)
-            ? productDictionary[searchProduct]
-            : null;
-
-        bool productFound = product != null;
-
-        if (productFound)
-        {
-
-            WriteLine("Sök kategori:");
-
-            var searchCategory = ReadLine();
-
-            Clear();
-
-
-            var category = categoryDictionary.ContainsKey(searchCategory)
-                ? categoryDictionary[searchCategory]
-                : null;
-
-
-            if (category != null)
-            {
-                if (category.ListOfProducts.Contains(product) == false)
-                {
-                    category.AddProduct(product);
-                    WriteLine("Produkt tillagd i kategori");
-                }
-                else
-                {
-                    WriteLine("Produkt redan tillagd");
-                }
-
-
-            }
-            else
-            {
-                WriteLine("Kategori saknas");
-            }
-
-
-        }
-        else
-        {
-            WriteLine("Produkt finns ej");
-        }
-
-
-        Thread.Sleep(2000);
-    }
-
-
-    static void AddCategory()
-    {
-        {
-            ConsoleKeyInfo userInput;
-            string nameOfCategory;
-            do
-            {
-
-                Write("Namn: ");
-
-                nameOfCategory = ReadLine();
-
-                WriteLine("Korrekta uppgifter tryck (J)a, om inte, tryck (N)ej.");
-
-
-                bool invalidSelection = false;
-
-                do
-                {
-                    userInput = ReadKey(true);
-
-                    invalidSelection = !(
-                        userInput.Key == ConsoleKey.J ||
-                        userInput.Key == ConsoleKey.N
-                        );
-
-                } while (invalidSelection);
-
-            } while (userInput.Key == ConsoleKey.N);
-
-            Clear();
-
-            switch (userInput.Key)
-            {
-                case ConsoleKey.J:
-
-
-                    try
-                    {
-                        categoryDictionary.Add(nameOfCategory, new Category(nameOfCategory));
-                        WriteLine("Kategori skapad");
-
-                    }
-                    catch (ArgumentException) when (categoryDictionary.ContainsKey(nameOfCategory))
-                    {
-                        WriteLine("Kategori är redan tillagd");
-                    }
-                    catch (ArgumentNullException)
-                    {
-                        WriteLine("Ogiltigt namn");
-                    }
-
-                    Thread.Sleep(2000);
-
-                    Clear();
-
-                    break;
-
-                case ConsoleKey.N:
-
-                    WriteLine("Åter till menyn");
-
-                    Thread.Sleep(2000);
-
-                    Clear();
-
-                    break;
-
-            }
-        }
-    }
+    
     static void AddProduct()
     {
         ConsoleKeyInfo userInput;
@@ -350,17 +173,21 @@ class Products
 
                 try
                 {
-                    productDictionary.Add(articleNumber, new Product(articleNumber, nameOfProduct, descriptionOfProduct, productPrice));
+
+                    context.Product.Add(new Product(articleNumber, nameOfProduct, descriptionOfProduct, productPrice));
+
+                    context.SaveChanges();
+
                     WriteLine("Produkt tillagd");
 
                 }
-                catch (ArgumentException) when (productDictionary.ContainsKey(articleNumber))
-                {
-                    WriteLine("Produkt finns redan");
-                }
-                catch (ArgumentNullException)
+                catch (ArgumentException)
                 {
                     WriteLine("Ogiltigt artikelnummer");
+                }
+                catch (DbUpdateException)
+                {
+                    WriteLine("Produkt finns redan");
                 }
 
                 Thread.Sleep(2000);
@@ -379,4 +206,175 @@ class Products
 
         }
     }
+    static void SearchProduct()
+    {
+        Write("Sök efter artikelnummer på produkten: ");
+
+        string searchProduct = ReadLine();
+
+        Clear();
+
+        Product searchResult = context.Product.FirstOrDefault(x => x.ArticleNumber == searchProduct);
+
+        bool invalidSelection = false;
+
+        ConsoleKeyInfo userInput;
+
+        if (searchResult != null)
+        {
+
+            Clear();
+
+            WriteLine($"Artikelnummer: {searchResult.ArticleNumber}");
+            WriteLine($"Namn: {searchResult.Name}");
+            WriteLine($"Beskrivning: {searchResult.Description}");
+            WriteLine($"Pris: {searchResult.Price}");
+            WriteLine();
+
+            WriteLine("Tryck valfri tangent för att gå tillbaka");            
+
+            do
+            {
+                userInput = ReadKey(true);
+
+            } while (invalidSelection);
+        }
+        else
+        {
+            Clear();
+            WriteLine("Produkt saknas");
+        }
+
+        Thread.Sleep(2000);
+    }
+    static void AddCategory()
+    {
+        {
+            ConsoleKeyInfo userInput;
+            string nameOfCategory;
+            do
+            {
+
+                Write("Namn: ");
+
+                nameOfCategory = ReadLine();
+
+                WriteLine("Korrekta uppgifter tryck (J)a, om inte, tryck (N)ej.");
+
+
+                bool invalidSelection = false;
+
+                do
+                {
+                    userInput = ReadKey(true);
+
+                    invalidSelection = !(
+                        userInput.Key == ConsoleKey.J ||
+                        userInput.Key == ConsoleKey.N
+                        );
+
+                } while (invalidSelection);
+
+            } while (userInput.Key == ConsoleKey.N);
+
+            Clear();
+
+            switch (userInput.Key)
+            {
+                case ConsoleKey.J:
+
+                    try
+                    {
+                        context.Category.Add(new Category(nameOfCategory));
+
+                        context.SaveChanges();
+
+                        WriteLine("Kategori tillagd");
+                    }
+                    catch (ArgumentException)
+                    {
+                        WriteLine("Ogiltigt namn");
+                    }
+                    catch (DbUpdateException)
+                    {
+                        WriteLine("Kategori finns redan");
+                    }
+
+                    Thread.Sleep(2000);
+
+                    Clear();
+
+                    break;
+
+                case ConsoleKey.N:
+
+                    WriteLine("Åter till menyn");
+
+                    Thread.Sleep(2000);
+
+                    break;
+
+             
+
+            }
+        }
+    }
+
+    static void AddProductToCategory()
+    {
+        Write("Artikelnummer: ");
+
+        var searchProduct = ReadLine();
+
+
+        //var product = productDictionary.ContainsKey(searchProduct)
+        //    ? productDictionary[searchProduct]
+        //    : null;
+
+        bool productFound = product != null;
+
+        if (productFound)
+        {
+
+            WriteLine("Sök kategori:");
+
+            var searchCategory = ReadLine();
+
+            Clear();
+
+
+            //var category = categoryDictionary.ContainsKey(searchCategory)
+            //? categoryDictionary[searchCategory]
+            //: null;
+
+
+            if (category != null)
+            {
+                if (category.ListOfProducts.Contains(product) == false)
+                {
+                    category.AddProduct(product);
+                    WriteLine("Produkt tillagd i kategori");
+                }
+                else
+                {
+                    WriteLine("Produkt redan tillagd");
+                }
+
+
+            }
+            else
+            {
+                WriteLine("Kategori saknas");
+            }
+
+        }
+        else
+        {
+            WriteLine("Produkt finns ej");
+        }
+
+        Thread.Sleep(2000);
+    }
+
+
 }

@@ -1,50 +1,18 @@
-﻿namespace ProductManager.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ProductManager.Models;
 
 public class Category
 {
-    public Category(string? name)
+    public Category(string name)
     {
-        CategoryName = name;
+        Name = string.IsNullOrEmpty(name) ? throw new ArgumentNullException("Ogiltligt namn") : name;
 
     }
 
-    public string CategoryName
-    {
-        get
-        {
+    public int CategoryId { get; set; } 
 
-            return name;
-
-        }
-        set
-        {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException("Ogiltligt namn");
-            name = value;
-        }
-
-
-    }
-
-
-
-    private string name;
-
-    public List<Product> ListOfProducts { get; } = new List<Product>();
-
-    public void AddProduct(Product product)
-    {
-
-        if (ListOfProducts.Contains(product))
-        {
-            throw new ArgumentException("Produkt finns redan i kategorin");
-        }
-        else
-        {
-            ListOfProducts.Add(product);
-        }
-
-
-    }
-
+    [MaxLength(50)]
+    public string Name { get; set; }      
+     
 }
