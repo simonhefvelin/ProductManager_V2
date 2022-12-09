@@ -150,6 +150,8 @@ class Products
 
             } while (invalidSelection);
 
+            Clear();
+
         } while (userInput.Key == ConsoleKey.N);
 
         Clear();
@@ -265,6 +267,8 @@ class Products
                         );
 
                 } while (invalidSelection);
+
+                Clear();
 
             } while (userInput.Key == ConsoleKey.N);
 
