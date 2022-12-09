@@ -12,6 +12,7 @@ class Products
     static ApplicationContext context = new ApplicationContext();
     static void Main(string[] args)
     {
+        context.Database.Migrate();
 
         var applicationRunning = true;
         do
@@ -80,28 +81,14 @@ class Products
                 case ConsoleKey.NumPad4:
 
 
-                    //AddProductToCategory();
+                    AddProductToCategory();
 
                     break;
 
                 case ConsoleKey.D5:
                 case ConsoleKey.NumPad5:
 
-
-                    //{
-                    //    WriteLine("Namn");
-                    //    WriteLine("--------------------------------");
-
-
-                    //    foreach (var category in categoryDictionary)
-                    //    {
-                    //        WriteLine($"{category.Value.CategoryName} ({category.Value.ListOfProducts.Count()})");
-                    //    }
-
-                    //    ReadKey();
-
-                    //    Clear();
-                    //}
+                    ListCategorys();
 
                     break;
 
@@ -117,7 +104,8 @@ class Products
 
         } while (applicationRunning);
     }
-    
+
+
     static void AddProduct()
     {
         ConsoleKeyInfo userInput;
@@ -210,11 +198,14 @@ class Products
     {
         Write("Sök efter artikelnummer på produkten: ");
 
-        string searchProduct = ReadLine();
+        var searchProduct = ReadLine();
 
         Clear();
 
-        Product searchResult = context.Product.FirstOrDefault(x => x.ArticleNumber == searchProduct);
+        var searchResult = FindProduct(searchProduct);
+
+
+        //Product searchResult = context.Product.FirstOrDefault(x => x.ArticleNumber == searchProduct);
 
         bool invalidSelection = false;
 
@@ -231,7 +222,7 @@ class Products
             WriteLine($"Pris: {searchResult.Price}");
             WriteLine();
 
-            WriteLine("Tryck valfri tangent för att gå tillbaka");            
+            WriteLine("Tryck valfri tangent för att gå tillbaka");
 
             do
             {
@@ -314,7 +305,7 @@ class Products
 
                     break;
 
-             
+
 
             }
         }
@@ -322,45 +313,45 @@ class Products
 
     static void AddProductToCategory()
     {
-        Write("Artikelnummer: ");
+        Write("Ange artikelnummer: ");
 
         var searchProduct = ReadLine();
 
+        Clear();
 
-        //var product = productDictionary.ContainsKey(searchProduct)
-        //    ? productDictionary[searchProduct]
-        //    : null;
+        var product = FindProduct(searchProduct);
 
-        bool productFound = product != null;
 
-        if (productFound)
+        if (product != null)
         {
 
             WriteLine("Sök kategori:");
 
-            var searchCategory = ReadLine();
+            var category = ReadLine();
 
             Clear();
 
-
-            //var category = categoryDictionary.ContainsKey(searchCategory)
-            //? categoryDictionary[searchCategory]
-            //: null;
+            var searchCategory = FindCategory(category);
 
 
-            if (category != null)
-            {
-                if (category.ListOfProducts.Contains(product) == false)
+            if (searchCategory != null)
+            {                            
+                try
                 {
-                    category.AddProduct(product);
+                    searchCategory.Product.Add(product);
+
+                    var updateSuccess = context.SaveChanges();
+
+                    if (updateSuccess == 0) throw new Exception("");
+                    
                     WriteLine("Produkt tillagd i kategori");
                 }
-                else
+                catch (Exception)
                 {
                     WriteLine("Produkt redan tillagd");
                 }
-
-
+                
+                
             }
             else
             {
@@ -375,6 +366,45 @@ class Products
 
         Thread.Sleep(2000);
     }
+
+
+    static void ListCategorys()
+    {
+        WriteLine("Namn");
+        WriteLine("--------------------------------");
+
+        var getCategory = context.Category.Include(x => x.Product);
+
+        foreach (var categorys in getCategory)
+        {
+            WriteLine($"{categorys.Name} ({categorys.Product.Count})");
+        }
+
+        ReadKey();
+
+        Clear();
+    }
+
+
+
+    static Product? FindProduct(string? searchProduct)
+    {       
+
+        var searchResult = context.Product
+            .FirstOrDefault(x => x.ArticleNumber == searchProduct);
+
+        return searchResult;
+    }
+
+
+    static Category? FindCategory(string category)
+    {
+   
+        return context.Category.Include(x => x.Product).FirstOrDefault(x => x.Name == category);
+
+    }
+
+
 
 
 }

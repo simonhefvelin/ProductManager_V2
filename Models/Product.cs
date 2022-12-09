@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace ProductManager.Models;
@@ -27,5 +28,7 @@ public class Product
     [MaxLength(18)]
     [Precision(18,2)]
     public decimal Price { get; set; }
+
+    public ICollection<Category> Category { get; set; } = new List<Category>();
 }
 
